@@ -8,7 +8,6 @@
 
 DB.create_table? :rooms do
   foreign_key :monster_id, :monsters, type: String
-
   String :name, primary_key: true
   String :description
   Integer :treasure
@@ -22,8 +21,6 @@ class Room < Sequel::Model
   def self.random
     Room.all.sample
   end
-
-
 end
 
 Room.unrestrict_primary_key
