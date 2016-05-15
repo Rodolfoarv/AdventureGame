@@ -9,11 +9,15 @@
     <div class="row">
       <h1>WEREWOLVES AND WANDERER </h1>
       <br>
-      <input type="text" class="form-control input-lg" id="nameField" name="name" placeholder="What is your name hero?" />
+      <form id="form_player_name" method="POST">
+
+      <input type="text" class="form-control input-lg" id="tf_name" name="name" placeholder="What is your name hero?" />
       <br>
       <br>
-      <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#instructionsModal" > Ready! </button>
+      <button id="btn_create_game" type="submit" class="btn btn-success btn-lg"> Ready! </button>
       <a href="#about" class="smoothScroll btn btn-info btn-lg">Instructions</a>
+    </form>
+
 
       <br>
 
