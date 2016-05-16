@@ -7,6 +7,7 @@
 #pick up treasures and so on
 #
 require_relative 'fighting_state'
+require_relative 'buying_state'
 
 class ExploringState
   def initialize(game)
@@ -199,8 +200,15 @@ class ExploringState
 
   # Transitions to the buying state
   def inventory
+    puts "here"
     @game.state = BuyingState.new @game
+    @game.state.status
+  end
 
-    @game.state.handle
+  def help
+  end
+
+  def start
+    status
   end
 end
