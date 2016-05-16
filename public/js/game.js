@@ -1,29 +1,81 @@
-var zorklike = {};
+var STATUS = {}
+var VALID_COMMANDS = {
+  "ExploringState": ["north", "south", "east", "west", "up", "down",
+      "magic", "run", "fight", "tally", "consume", "pick_up"],
+  "FightingState": ["1", "2"],
+};
+var greetingsMessage =  {greetings: "Welcome hero! You are about to start an adventure.\n In order to start the adventure you must move through the castle\n you must type: north, south, east, west, up, down, magic, run, fight,\n tally, consume, pick_up. \n If you want to remember this instructions type <help>. \n\n Let's get started! \n Are you ready for this adventure? \n Type <start> to begin!"};
 
-zorklike.location = new StartLocation();
 
-zorklike.init = function() {
-	$('#shell').terminal(zorklike.terminal.main, zorklike.configuration);
+var CURRENT_STATE = "ExploringState";
+
+var werewolf = {};
+
+werewolf.init = function() {
+	$('#shell').terminal(werewolf.terminal.main, greetingsMessage);
 };
 
-zorklike.terminal = {
-	main: function(input, terminal) {
-		var command = $.trim(input);
+function getStatus(callback){
+	$.ajax({
+		type: 'GET',
+		url: '/status',
+		data: {},
+		success: function(data, textStatus, jqXHR) {
+			try { data = JSON.parse(data); } catch (e) { alert("ERROR parsin JSON"); }
+				if (data) {
+					STATUS = data;
+					CURRENT_STATE = data.state;
+				}
+				callback(STATUS);
+		}
 
+	});
+}
+
+
+function validCommand(command){
+	var isValid = VALID_COMMANDS[CURRENT_STATE].indexOf(command) >= 0;
+	// if (command == "fight" && !hasMonster()) valid = false;
+	return isValid;
+}
+
+
+werewolf.terminal = {
+	main: function(input, terminal) {
+		getStatus(function (status){
+			terminal.echo(status.output);
+		});
+
+		var command = $.trim(input);
 		if (command !== '') {
 			var argv = command.split(' ');
-			if (argv[0] in zorklike.commands) {
-				// call command
-				var zorklikeCommand = zorklike.commands[argv[0]];
-				zorklikeCommand(argv.slice(1), terminal);
-			} else {
-				terminal.echo("I don't know how to do that.");
+			if (!validCommand(argv[0])){
+				terminal.echo("Invalid command type <help> if you need to remember available commands")
+				return;
 			}
+			$.ajax({
+				type: 'POST',
+				url: '/command',
+				data: { command: argv[0] },
+				success: function(data, textStatus, jqXHR) {
+					console.log("RESPONSE:", data);
+					try { data = JSON.parse(data); } catch (e) { alert("ERROR parsin JSON"); }
+						if (data) {
+							STATUS = data;
+							CURRENT_STATE = data.state;
+						}
+						terminal.clear();
+						terminal.echo(data.output);
+				}
+
+			});
+
+
 		}
 
 		// blank line trailer
-		zorklike.terminal.write('\n', terminal);
-		zorklike.terminal.scroll();
+		werewolf.terminal.write('\n', terminal);
+		werewolf.terminal.scroll();
 	},
 
 	write: function(string, terminal) {
@@ -60,7 +112,7 @@ zorklike.terminal = {
 
 					// write the truncated string, then recurse on the remainder
 					terminal.echo(shortString);
-					return zorklike.terminal.write(words.slice(i).join(' '), terminal);
+					return werewolf.terminal.write(words.slice(i).join(' '), terminal);
 				} else {
 					if (shortString === '') {
 						shortString = words[i];
@@ -78,75 +130,9 @@ zorklike.terminal = {
 	}
 };
 
-zorklike.commands = {
-	help: function(args, terminal) {
-		if (args.length === 0) {
-			zorklike.terminal.write("Available commands are: help, look, go. Type 'help <command>' for specific information.",
-						terminal);
-		} else {
-			if (args[0] === 'look') {
-				zorklike.terminal.write("look <direction or item>: describes direction or visible item. Common directions are up, down, forward and backward.",
-							terminal);
-			} else if (args[0] === 'go') {
-				zorklike.terminal.write("go <location>: moves to specified location.",
-							terminal);
-			} else if (args[0] === 'help') {
-				zorklike.terminal.write("help <command>: gives a description of that command.",
-							terminal);
-			}
-			 else if (args[0] === 'test') {
-				zorklike.terminal.write("test aprooved",
-							terminal);
-			}
-      else {
-				zorklike.terminal.write("No help for that command.",
-							terminal);
-			}
-		}
-	},
 
-	look: function(args, terminal) {
-		if (args.length === 0) {
-			zorklike.terminal.write("Which direction you want to look in?",
-									terminal);
-		} else {
-			var direction = args[0];
-			zorklike.terminal.write(
-				zorklike.location.look(direction),
-				terminal);
-		}
-	},
-
-  test: function(args, terminal) {
-    terminal.echo("Test worked");
-  },
-
-	go: function(args, terminal) {
-		if (args.length === 0) {
-			zorklike.terminal.write("You need to pick a direction to go in.",
-									terminal);
-		} else {
-			var direction = args[0];
-
-			try {
-				zorklike.location = zorklike.location.go(direction);
-				zorklike.terminal.write(
-					zorklike.location.description,
-					terminal);
-
-			} catch (reasonWhyNot) {
-				zorklike.terminal.write(reasonWhyNot, terminal);
-			}
-		}
-	},
-
-
-};
-
-zorklike.configuration = {greetings: zorklike.location.description +
-			  "\n\nAvailable commands are: help, look, go.\n",
-			  exit: false};
+werewolf.configuration = {greetings: "Test"};
 
 $(function() {
-	zorklike.init();
+	werewolf.init();
 });

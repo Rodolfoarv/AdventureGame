@@ -38,7 +38,6 @@ class Player
     @items[:amulet]  = true
     @items[:suit]    = true
     @items[:weapons] = Set.new [:axe, :sword]
-    @inventory = Inventory.new
     @strength = 60 + rand(1..100)
     @wealth = 30 + rand(1..100)
 
@@ -49,7 +48,7 @@ class Player
     %Q{
       Your strength is #{@strength}.
       You have $#{@wealth}.
-      Your provision sack holds #{@inventory.food} units of food.
+      Your provision sack holds #{@food} units of food.
     }
   end
 
