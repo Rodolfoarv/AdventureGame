@@ -1,14 +1,11 @@
 var STATUS = {}
 var VALID_COMMANDS = {
   "ExploringState": ["north", "south", "east", "west", "up", "down",
-      "magic", "run", "fight", "tally", "consume", "pick_up"],
-  "FightingState": ["1", "2"],
+      "magic", "run", "fight", "tally", "consume", "pick_up", "start","help"],
+  "FightingState": ["1", "2","help"],
 };
 var greetingsMessage =  {greetings: "Welcome hero! You are about to start an adventure.\n In order to start the adventure you must move through the castle\n you must type: north, south, east, west, up, down, magic, run, fight,\n tally, consume, pick_up. \n If you want to remember this instructions type <help>. \n\n Let's get started! \n Are you ready for this adventure? \n Type <start> to begin!"};
-
-
 var CURRENT_STATE = "ExploringState";
-
 var werewolf = {};
 
 werewolf.init = function() {
@@ -35,7 +32,7 @@ function getStatus(callback){
 
 function validCommand(command){
 	var isValid = VALID_COMMANDS[CURRENT_STATE].indexOf(command) >= 0;
-	// if (command == "fight" && !hasMonster()) valid = false;
+	if (command == "fight" && !hasMonster()) valid = false;
 	return isValid;
 }
 
@@ -49,8 +46,12 @@ werewolf.terminal = {
 		var command = $.trim(input);
 		if (command !== '') {
 			var argv = command.split(' ');
+			if (argv[0] === 'help') {
+				terminal.echo('[[;#0ff;]' + "In order to start the adventure you must move through the castle\n you must type: north, south, east, west, up, down, magic, run, fight,\n tally, consume, pick_up." + ']');
+				// terminal.error("In order to start the adventure you must move through the castle\n you must type: north, south, east, west, up, down, magic, run, fight,\n tally, consume, pick_up.");
+			}
 			if (!validCommand(argv[0])){
-				terminal.echo("Invalid command type <help> if you need to remember available commands")
+				terminal.error("Invalid command type <help> if you need to remember available commands")
 				return;
 			}
 			$.ajax({
@@ -65,14 +66,11 @@ werewolf.terminal = {
 							CURRENT_STATE = data.state;
 						}
 						terminal.clear();
-						terminal.echo(data.output);
+						terminal.echo('[[;#0f0;]' + data.output + ']');
 				}
 
 			});
-
-
 		}
-
 		// blank line trailer
 		werewolf.terminal.write('\n', terminal);
 		werewolf.terminal.scroll();
@@ -129,9 +127,6 @@ werewolf.terminal = {
 		window.scrollBy(0, bottom);
 	}
 };
-
-
-werewolf.configuration = {greetings: "Test"};
 
 $(function() {
 	werewolf.init();
