@@ -76,10 +76,8 @@ class ExploringState
     else
       output << self.send(method)
     end
-
     output << "\n"
     output << self.status
-
     output
   end
 
@@ -89,9 +87,6 @@ class ExploringState
     output = ""
     output << "Tally at present is #{player.score}\n"
     output << "You have killed #{player.monsters_killed} monsters so far...\n" if rand > 0.5
-
-    puts output
-
     output
   end
 
@@ -126,12 +121,10 @@ class ExploringState
 
     return "There is no treasure to pick up\n" unless treasure && treasure > 0
     return "You cannot see where it is\n" unless has_torch
-
     @game.player.wealth += treasure
-
+    @game.current_room_model.update(:treasure => 0) #Update the treasure to 0
     return "You picked-up gems worth $#{treasure}\n"
 
-    # TODO: update room status
   end
 
   # Move from one room to another
@@ -200,7 +193,6 @@ class ExploringState
 
   # Transitions to the buying state
   def inventory
-    puts "here"
     @game.state = BuyingState.new @game
     @game.state.status
   end
