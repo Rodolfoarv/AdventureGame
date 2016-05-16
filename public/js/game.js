@@ -1,8 +1,11 @@
 var STATUS = {}
 var VALID_COMMANDS = {
   "ExploringState": ["north", "south", "east", "west", "up", "down",
-      "magic", "run", "fight", "tally", "consume", "pick_up", "start","help"],
-  "FightingState": ["1", "2","help"],
+      "magic", "run", "fight", "tally", "consume", "pick_up", "start","help", "inventory"],
+  "FightingState": ["1", "2","help", "start"],
+  "BuyingState": ["0", "1", "2", "3", "4", "5", "6","help", "start"]
+
+
 };
 var greetingsMessage =  {greetings: "Welcome hero! You are about to start an adventure.\n In order to start the adventure you must move through the castle\n you must type: north, south, east, west, up, down, magic, run, fight,\n tally, consume, pick_up. \n If you want to remember this instructions type <help>. \n\n Let's get started! \n Are you ready for this adventure? \n Type <start> to begin!"};
 var CURRENT_STATE = "ExploringState";
@@ -48,28 +51,33 @@ werewolf.terminal = {
 			var argv = command.split(' ');
 			if (argv[0] === 'help') {
 				terminal.echo('[[;#0ff;]' + "In order to start the adventure you must move through the castle\n you must type: north, south, east, west, up, down, magic, run, fight,\n tally, consume, pick_up." + ']');
-				// terminal.error("In order to start the adventure you must move through the castle\n you must type: north, south, east, west, up, down, magic, run, fight,\n tally, consume, pick_up.");
 			}
 			if (!validCommand(argv[0])){
 				terminal.error("Invalid command type <help> if you need to remember available commands")
 				return;
 			}
-			$.ajax({
-				type: 'POST',
-				url: '/command',
-				data: { command: argv[0] },
-				success: function(data, textStatus, jqXHR) {
-					console.log("RESPONSE:", data);
-					try { data = JSON.parse(data); } catch (e) { alert("ERROR parsin JSON"); }
-						if (data) {
-							STATUS = data;
-							CURRENT_STATE = data.state;
-						}
-						terminal.clear();
-						terminal.echo('[[;#0f0;]' + data.output + ']');
-				}
 
-			});
+      if (CURRENT_STATE === "BuyingState") return handleShopping(command, terminal);
+      else if (CURRENT_STATE === "FightingState") return handleFighting(command,terminal);
+      else{
+        $.ajax({
+          type: 'POST',
+          url: '/command',
+          data: { command: argv[0] },
+          success: function(data, textStatus, jqXHR) {
+            console.log("RESPONSE:", data);
+            try { data = JSON.parse(data); } catch (e) { alert("ERROR parsin JSON"); }
+              if (data) {
+                STATUS = data;
+                CURRENT_STATE = data.state;
+              }
+              terminal.clear();
+              terminal.echo('[[;#0f0;]' + data.output + ']');
+          }
+
+        });
+      }
+
 		}
 		// blank line trailer
 		werewolf.terminal.write('\n', terminal);
@@ -127,6 +135,30 @@ werewolf.terminal = {
 		window.scrollBy(0, bottom);
 	}
 };
+
+function handleShopping(command, terminal){
+  var output = "";
+  command = Number(command);
+
+  $.ajax({
+  type: 'POST',
+  url: '/shop',
+  data: { item: command },
+  success: function(data, textStatus, jqXHR) {
+    console.log("RESPONSE:", data);
+    try { data = JSON.parse(data); } catch (e) { alert("ERROR parsin JSON"); }
+    if (data) {
+      STATUS = data;
+      CURRENT_STATE = data.state;
+    }
+    STATUS = data;
+      terminal.clear();
+      terminal.echo('[[;#0f0;]' + data.output + ']');
+  }
+});
+
+
+}
 
 $(function() {
 	werewolf.init();

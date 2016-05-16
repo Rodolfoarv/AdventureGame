@@ -59,15 +59,23 @@ end
 
 post '/command' do
   status = Hash.new
-  p "Params"
-  p params
   game = session[:game]
   command = params[:command].to_sym
   puts "EXECUTING COMMAND: #{command}"
   output = game.state.handle command
-  puts output
+  status = get_status
+  # status[:output] = output
+  puts "STATUS"
+  status.to_json
+end
+
+post '/shop' do
+  status = get_status
+  item = params[:item]
+  game = session[:game]
+  output = game.state.handle item
+
   status = get_status
   status[:output] = output
-  puts "STATUS"
   status.to_json
 end
