@@ -63,8 +63,9 @@ post '/command' do
   command = params[:command].to_sym
   puts "EXECUTING COMMAND: #{command}"
   output = game.state.handle command
+  puts output
   status = get_status
-  # status[:output] = output
+  status[:output] = output
   puts "STATUS"
   status.to_json
 end
@@ -74,8 +75,20 @@ post '/shop' do
   item = params[:item]
   game = session[:game]
   output = game.state.handle item
-
   status = get_status
   status[:output] = output
   status.to_json
+end
+
+post '/fight_monster' do
+  status = get_status
+  game = session[:game]
+  weapon = params[:weapon].to_sym
+  output = game.state.handle weapon
+  
+  status = get_status
+  status[:output] = output
+  status.to_json
+
+
 end

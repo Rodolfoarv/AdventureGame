@@ -18,6 +18,7 @@ class BuyingState
   def status
     output = ""
     output = "\nYour current wealth is: #{@game.player.wealth}\n"
+    output << "\n Your current number of food stacks is: #{@game.player.food}\n"
     output << "\n******* Provisions & Inventory********* \n"
     output << "\nWelcome to the store! May I offer you something? \n\n1- Flamming Torch ($15)\n"
     output << "2 - Axe ($10) \n"
@@ -44,7 +45,6 @@ class BuyingState
   def handleCheating(wealth, price, output)
     player = @game.player
     if wealth < price
-      puts "You have tried to cheat me!"
       output << "\nYou have tried to cheat me! Now you will suffer!!\n"
       player.items = Hash.new
       player.food = (player.food / 4).to_i
@@ -58,15 +58,14 @@ class BuyingState
     current_item_price = 0
     output = ""
     if option == 0
-      puts "Doesn't work"
       @game.state = ExploringState.new @game
-      @game.state.status
+      output << "Back to exploring!"
       output << @game.state.status
-      output
     else
       current_item_price = 2 * option
       player.food += option
       handleCheating(player.wealth, current_item_price, output)
+      output << @game.state.status
     end
     @isBuyingFood = false
     output
@@ -85,7 +84,6 @@ class BuyingState
       option = command.to_i
       if option == 0
         @game.state = ExploringState.new @game
-        @game.state.status
       elsif option == 1
         current_item_price = 15
         items[:torch] = 1
@@ -103,12 +101,13 @@ class BuyingState
       elsif option == 6
         current_item_price = 60
         items[:suit] = 1
+
       end
       handleCheating(player.wealth, current_item_price, output)
 
       if option == 4
         @isBuyingFood = true
-        output << "\n"
+        output = ""
         output << food_status
         output
       else

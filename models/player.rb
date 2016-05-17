@@ -32,10 +32,10 @@ class Player
     @wealth          = 30 + rand(1..100)
     @food            = 0
     @tally = 0
-    @monster_tally = 0
+    @monsters_killed = 0
     @items           = Hash.new
-    @items[:torch]   = true
-    @items[:amulet]  = true
+    @items[:torch]   = false
+    @items[:amulet]  = false
     @items[:suit]    = true
     @items[:weapons] = Set.new [:axe, :sword]
     @strength = 60 + rand(1..100)
@@ -64,6 +64,8 @@ class Player
 
   #Returns the player's score
   def score
-    3*@tally + 5*@strength + 2*@wealth + @food + 30*@monsters_tally
+    3*@tally + 5*@strength + 2*@wealth + @food + 30*@monsters_killed
   end
+
+
 end
