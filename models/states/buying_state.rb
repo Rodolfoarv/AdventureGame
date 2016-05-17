@@ -16,6 +16,7 @@ class BuyingState
 
   # Returns the current status for the state, i.e. request the player to buy something
   def status
+    output = ""
     output = "\nYour current wealth is: #{@game.player.wealth}\n"
     output << "\n******* Provisions & Inventory********* \n"
     output << "\nWelcome to the store! May I offer you something? \n\n1- Flamming Torch ($15)\n"
@@ -25,7 +26,6 @@ class BuyingState
     output << "5 - Magic Amulet ($30)\n"
     output << "6 - Suit of Armor ($50)\n"
     output << "0 - To continue adventure\n"
-
     output
   end
 
@@ -33,7 +33,6 @@ class BuyingState
     output = "\nYour current wealth is: #{@game.player.wealth}\n"
     output << "\n******* Provisions & Inventory********* \n"
     output << "\nHow many stacks of food do you wish to buy ($2 ea)? \n\n"
-
     output
   end
 
@@ -121,28 +120,3 @@ class BuyingState
     end
   end
 end
-
-
-
-
-    # if option != 4
-    #   if player.wealth >0
-    #     puts "You have $#{player.wealth}"
-    #   end
-    #   if player.wealth == 0
-    #     puts "You have no money"
-    #   end
-    # else
-    #   loop do
-    #     puts "How many units of food "
-    #     quantity = gets.to_i
-    #     if quantity * 2 > player.wealth
-    #       puts "You haven't got enough money"
-    #     end
-    #     if quantity * 2 <= player.wealth
-    #       player.food += quantity
-    #       player.wealth -= 2 * quantity
-    #       break
-    #     end
-    #   end
-    # end
