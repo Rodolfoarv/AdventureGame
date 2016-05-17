@@ -12,6 +12,7 @@ require_relative 'buying_state'
 class ExploringState
   def initialize(game)
     @game = game
+    @eating_food = false
   end
 
 
@@ -60,24 +61,46 @@ class ExploringState
   # - :consume : Eats food to gain strength
   def handle(command)
     puts "Doing #{command}..."
-    method = command
-    case command
-    when :north then method = :move
-    when :south then method = :move
-    when :east  then method = :move
-    when :west  then method = :move
-    when :up    then method = :move
-    when :down  then method = :move
-    end
-
     output = ""
-    if method == :move
-      output << self.send(method, command)
+    if @eating_food
+      puts command
+      food_quantities = {:one => 1, :two => 2, :three => 3, :four => 4, :five => 5, :six => 6,
+      :seven => 7, :eight => 8, :nine => 9, :ten => 10}
+      units_of_food = food_quantities[command]
+      food = @game.player.food
+      if units_of_food > food
+        output << "You do not have enough food, try again\n"
+        output << consume
+      else
+        puts "Got here"
+        @game.player.strength += 5*units_of_food
+        @game.player.food -= units_of_food
+        @eating_food = false
+        output << "You have consumed #{units_of_food} number of foods\n"
+        output << self.status
+      end
+
     else
-      output << self.send(method)
+      method = command
+      case command
+      when :north then method = :move
+      when :south then method = :move
+      when :east  then method = :move
+      when :west  then method = :move
+      when :up    then method = :move
+      when :down  then method = :move
+      end
+
+      output = ""
+      if method == :move
+        output << self.send(method, command)
+        output << self.status
+      else
+        output << self.send(method)
+      end
+
     end
     output << "\n"
-    output << self.status
     output
   end
 
@@ -110,21 +133,22 @@ class ExploringState
     room = Room.random
     return self.magic if room.name == "Entrance" || room.name == "Exit"
     @game.current_room = room.name
-
     "You moved to another room...\n"
   end
 
   # Pick-up the treasure in the room if there is any
   def pick_up
+    output = ""
     treasure = @game.current_room_model.treasure
     has_torch = @game.player.has_torch?
-
     return "There is no treasure to pick up\n" unless treasure && treasure > 0
     return "You cannot see where it is\n" unless has_torch
     @game.player.wealth += treasure
     @game.current_room_model.update(:treasure => 0) #Update the treasure to 0
-    return "You picked-up gems worth $#{treasure}\n"
+    output << "You picked-up gems worth $#{treasure}\n"
+    output << self.status
 
+    return output
   end
 
   # Move from one room to another
@@ -176,19 +200,13 @@ class ExploringState
 
   # Allows the player to eat food
   def consume
-    eated_food = 0;
-    player = @game.player
-    puts "you have #{player.food} Units of food"
-
-    loop do
-      puts "What do you Want to eat?"
-      eated_food = gets.to_i
-
-      break if eated_food <= player.food && eated_food >= 0
-    end
-
-    player.food -= eated_food
-    player.strength = (player.strength + 5 * eated_food).to_i
+    @eating_food = true
+    output = "\n How many units of food do you wish to consume? \nType any number between one and ten e.g one\n"
+    output << "\n You have: #{@game.player.food} quantity of food\n"
+    output << "\n Your strength is #{@game.player.strength} \n\n"
+    output << "If you wish to return to the main screen type 0 \n"
+    output << "\nWhat will you do? "
+    output
   end
 
   # Transitions to the buying state
@@ -197,10 +215,8 @@ class ExploringState
     @game.state.status
   end
 
-  def help
-  end
-
   def start
     status
   end
+
 end

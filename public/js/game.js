@@ -1,9 +1,10 @@
 var STATUS = {}
 var VALID_COMMANDS = {
   "ExploringState": ["north", "south", "east", "west", "up", "down",
-      "magic", "run", "fight", "tally", "consume", "pick_up", "start","help", "inventory"],
+      "magic", "run", "fight", "tally", "consume", "pick_up", "start","help", "inventory",
+    "0", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" ],
   "FightingState": ["1", "2","help", "start"],
-  "BuyingState": ["0", "1", "2", "3", "4", "5", "6","help", "start"]
+  "BuyingState": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "help", "start"]
 
 
 };
