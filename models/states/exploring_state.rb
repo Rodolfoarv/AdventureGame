@@ -22,6 +22,9 @@ class ExploringState
   # - Room's treasure
   # - Room's monster
   def status
+    has_torch = @game.player.has_torch?
+    return "You can't see anything, you must purchase a torch\n" unless has_torch
+
     output = StringIO.new
     output << @game.player.to_s
     output << "\n"
@@ -108,8 +111,9 @@ class ExploringState
   def tally
     player = @game.player
     output = ""
-    output << "Tally at present is #{player.score}\n"
-    output << "You have killed #{player.monsters_killed} monsters so far...\n" if rand > 0.5
+    output << "******** Your tally is:  #{player.score} ********* \n"
+    output << "You have killed #{player.monsters_killed} monsters so far...\n"
+    output << self.status
     output
   end
 
@@ -130,10 +134,12 @@ class ExploringState
 
   # Moves the player to a random room using the amulet
   def magic
+    output = ""
     room = Room.random
     return self.magic if room.name == "Entrance" || room.name == "Exit"
     @game.current_room = room.name
-    "You moved to another room...\n"
+    output << "You moved to another room...\n"
+    output << self.status
   end
 
   # Pick-up the treasure in the room if there is any
@@ -142,7 +148,7 @@ class ExploringState
     treasure = @game.current_room_model.treasure
     has_torch = @game.player.has_torch?
     return "There is no treasure to pick up\n" unless treasure && treasure > 0
-    return "You cannot see where it is\n" unless has_torch
+    return "You cannot see anything, you must buy a torch\n" unless has_torch
     @game.player.wealth += treasure
     @game.current_room_model.update(:treasure => 0) #Update the treasure to 0
     output << "You picked-up gems worth $#{treasure}\n"
@@ -155,6 +161,9 @@ class ExploringState
   def move(direction)
     movements = @game.current_room_model.movement
     monster = @game.current_room_model.monster
+    has_torch = @game.player.has_torch?
+
+    return "You must buy a torch to continue on your adventure\n" unless has_torch
 
     if direction == :north and not movements.north
       return "No exit that way"
@@ -217,6 +226,19 @@ class ExploringState
 
   def start
     status
+  end
+
+  def fight
+    puts "got here"
+    monster = @game.current_room_model.monster
+    player = @game.player
+    return unless monster
+    @game.state = FightingState.new @game
+    if not player.weapons.empty?
+      @game.state.status # Ask for weapon
+    else
+      @game.state.handle( nil ) # Start the fight without any weapon
+    end
   end
 
 end
