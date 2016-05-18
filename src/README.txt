@@ -63,7 +63,8 @@ link:/images/Fight_Activity.png
 link:/images/state_diagram.png
 
 === Development View
-The development view focusses on software modules and subsystems. In UML, <em>package diagrams</em> are used to model the development view.
+
+link:/images/package_diagram.png
 
 === Physical View
 
