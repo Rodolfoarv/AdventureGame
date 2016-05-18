@@ -2,9 +2,10 @@ var STATUS = {}
 var VALID_COMMANDS = {
   "ExploringState": ["north", "south", "east", "west", "up", "down",
       "magic", "run", "fight", "tally", "consume", "pick_up", "start","help", "inventory",
-    "0", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" ],
-  "FightingState": ["1", "2","help", "start"],
-  "BuyingState": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "help", "start"]
+     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" ],
+  "FightingState": ["1", "2","3","help", "start"],
+  "ShoppingState": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "help", "start"],
+  "DeadState" : ["restart", "help"]
 
 
 };
@@ -40,6 +41,10 @@ function validCommand(command){
 	return isValid;
 }
 
+function hasMonster(){
+  return STATUS.monster;
+}
+
 
 werewolf.terminal = {
 	main: function(input, terminal) {
@@ -57,9 +62,11 @@ werewolf.terminal = {
 				terminal.error("Invalid command type <help> if you need to remember available commands")
 				return;
 			}
+      console.log(CURRENT_STATE)
 
-      if (CURRENT_STATE === "BuyingState") return handleShopping(command, terminal);
+      if (CURRENT_STATE === "ShoppingState") return handleShopping(command, terminal);
       else if (CURRENT_STATE === "FightingState") return handleFighting(command,terminal);
+      else if (CURRENT_STATE === "DeadState") return handleRestart(command,terminal);
       else{
         $.ajax({
           type: 'POST',
@@ -99,7 +106,7 @@ werewolf.terminal = {
 				if (shortString.length + 1 + currentWord.length > terminal.cols()) {
 					// we can't add any more to this line without overflowing.
 
-					// check for stupidly long words, and break them with hyphenation
+					// check of long words
 					if (currentWord.length > terminal.cols()) {
 						var charsRemaining = terminal.cols() - shortString.length;
 
@@ -159,6 +166,38 @@ function handleShopping(command, terminal){
 });
 
 
+}
+
+function handleFighting(command, terminal){
+  var weapons = STATUS.weapons;
+  var output = "";
+  command = Number(command);
+  var weapon = weapons[command - 1];
+  console.log (weapon)
+
+  $.ajax({
+  type: 'POST',
+  url: '/fight_monster',
+  data: { weapon: weapon },
+  success: function(data, textStatus, jqXHR) {
+    console.log("RESPONSE:", data);
+    try { data = JSON.parse(data); } catch (e) { alert("ERROR parsin JSON"); }
+    STATUS = data;
+    CURRENT_STATE = data.state;
+    terminal.clear();
+    terminal.echo('[[;#0f0;]' + data.output + ']');
+  }
+});
+
+}
+
+function handleRestart(command, terminal){
+  $.ajax({
+  type: 'GET',
+  url: '/lost',
+  data: {}
+
+});
 }
 
 $(function() {

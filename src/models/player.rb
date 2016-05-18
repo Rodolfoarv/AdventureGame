@@ -46,6 +46,7 @@ class Player
   #The toString method provides the strength wealth and unit of food the user currently has
   def to_s
     %Q{
+#{@name} these are your stats:
     Your strength is #{@strength}.
     You have $#{@wealth}.
     Your provision sack holds #{@food} units of food.

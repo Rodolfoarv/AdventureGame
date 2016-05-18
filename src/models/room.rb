@@ -13,6 +13,14 @@ DB.create_table? :rooms do
   Integer :treasure
 end
 
+# Class that represents the room, as information it includes:
+# - name
+# - description
+# - monster
+# - treasure
+#It is important to note that the user wil be notified when a monster is present on the room
+#or when a treasure is there too. But take in note that a monster and a treasure will never be in
+#the same room.
 class Room < Sequel::Model
   many_to_one :monster
   one_to_one :movement, key: :room_name
@@ -21,6 +29,7 @@ class Room < Sequel::Model
   def self.random
     Room.all.sample
   end
+
 end
 
 Room.unrestrict_primary_key

@@ -1,6 +1,7 @@
 require 'csv'
 require 'sequel'
-DB = Sequel.connect("sqlite://game.db") # in memory
+#WIll connect to the database of the game
+DB = Sequel.connect("sqlite://game.db")
 
 require_relative '../models/monster'
 require_relative '../models/room'

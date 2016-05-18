@@ -2,25 +2,33 @@
 # Date: 05-May-2016
 # Authors: A01169701 Rodolfo Andrés Ramírez Valenzuela
 
-#The ExploringState class, allows to the user: fight with a monster
-#see your currents status, use magic, consume food, valid movements
-#pick up treasures and so on
-#
-require_relative 'fighting_state'
-require_relative 'buying_state'
 
+require_relative 'fighting_state'
+require_relative 'shopping_state'
+require_relative 'win_state'
+require_relative 'lose_state'
+
+#The ExploringState class, allows the user to explore through the castle
+#The use is able to check the current status of the game, use magic, consume food
+#and every action it is permited to. Also this class is responsible for the main
+#loop on the Game
 class ExploringState
+
+  #Method that initializes the state with the current game
   def initialize(game)
+    # game information
     @game = game
+    # verifies if the user is buying food
     @eating_food = false
   end
 
 
-  # Returns the current status of the state. This includes:
-  # - Player status
-  # - Room description
-  # - Room's treasure
-  # - Room's monster
+  #Method that returns the current status.
+  #It will display on the user input the following information:
+  # - Player's status
+  # - Room descrption
+  # - Room treasure (if exists)
+  # - Room monster (if exists)
   def status
     has_torch = @game.player.has_torch?
     return "You can't see anything, you must purchase a torch\n" unless has_torch
@@ -62,27 +70,24 @@ class ExploringState
   # - :pick_up : Picks the room's treasure if there is any
   # - :fight : Fights with the monster in the room
   # - :consume : Eats food to gain strength
+  # - :inventory : Will move to the ShoppingState and display the inventory information
   def handle(command)
     puts "Doing #{command}..."
     output = ""
     if @eating_food
-      puts command
-      food_quantities = {:one => 1, :two => 2, :three => 3, :four => 4, :five => 5, :six => 6,
+      food_quantities = {:zero => 0, :one => 1, :two => 2, :three => 3, :four => 4, :five => 5, :six => 6,
       :seven => 7, :eight => 8, :nine => 9, :ten => 10}
       units_of_food = food_quantities[command]
       food = @game.player.food
       if units_of_food > food
-        output << "You do not have enough food, try again\n"
-        output << consume
+        output << "\n*** You do not have enough food, try again ***\n"
       else
-        puts "Got here"
         @game.player.strength += 5*units_of_food
         @game.player.food -= units_of_food
-        @eating_food = false
         output << "You have consumed #{units_of_food} number of foods\n"
-        output << self.status
       end
-
+      @eating_food = false
+      output << self.status
     else
       method = command
       case command
@@ -107,7 +112,8 @@ class ExploringState
     output
   end
 
-  # Returns the current player's score
+  # Method that displays the current score of the game, the user is able to request this
+  # at anytime
   def tally
     player = @game.player
     output = ""
@@ -117,7 +123,7 @@ class ExploringState
     output
   end
 
-  #Allows the player to change the current state of the game to FightingState
+  #Method that allows the user to fight
   def fight
     monster = @game.current_room_model.monster
     player = @game.player
@@ -132,7 +138,7 @@ class ExploringState
     end
   end
 
-  # Moves the player to a random room using the amulet
+  # Method that will move the user to another random room
   def magic
     output = ""
     room = Room.random
@@ -142,7 +148,7 @@ class ExploringState
     output << self.status
   end
 
-  # Pick-up the treasure in the room if there is any
+  # Method that is used to pick_up a treasure
   def pick_up
     output = ""
     treasure = @game.current_room_model.treasure
@@ -157,7 +163,8 @@ class ExploringState
     return output
   end
 
-  # Move from one room to another
+  # Method that will validate the movement of the player, it will only
+  # be able to move to the rooms the user is able to.
   def move(direction)
     movements = @game.current_room_model.movement
     monster = @game.current_room_model.monster
@@ -181,20 +188,22 @@ class ExploringState
 
     return "Monster shouts: YOU SHALL NOT PASS!!" if monster && rand < 0.1
 
-    @game.current_room = movements.send(direction)
+
     @game.player.tally += 1
     @game.player.strength -= 5
 
     if @game.player.strength < 1
       @game.state = DeadState.new @game
+      return @game.state.status
     else
       @game.state = WinnerState.new(@game) if @game.current_room == "Exit"
     end
+        @game.current_room = movements.send(direction)
 
     "You moved to another room..."
   end
 
-  #Allows the user the probability to scape from a fight
+  #Method that allows the user to run from the fight
   def run(direction)
     output = ""
     if rand > 0.7
@@ -207,27 +216,28 @@ class ExploringState
     end
   end
 
-  # Allows the player to eat food
+  # Method that allows the player to eat food
   def consume
     @eating_food = true
-    output = "\n How many units of food do you wish to consume? \nType any number between one and ten e.g one\n"
+    output = "\n How many units of food do you wish to consume? \nType any number between one and ten as a word e.g one\n"
     output << "\n You have: #{@game.player.food} quantity of food\n"
     output << "\n Your strength is #{@game.player.strength} \n\n"
-    output << "If you wish to return to the main screen type 0 \n"
     output << "\nWhat will you do? "
     output
   end
 
-  # Transitions to the buying state
+  # Method that handles the transition to the ShoppingState
   def inventory
-    @game.state = BuyingState.new @game
+    @game.state = ShoppingState.new @game
     @game.state.status
   end
 
+  # Method used to display the current status of the game when the user enters the terminal
   def start
     status
   end
 
+  #Method used to handle the fight between a monster and the user.
   def fight
     puts "got here"
     monster = @game.current_room_model.monster

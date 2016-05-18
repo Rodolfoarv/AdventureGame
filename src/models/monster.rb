@@ -2,6 +2,7 @@
 # Date: 05-May-2016
 # Authors: A01169701 Rodolfo Andrés Ramírez Valenzuela
 
+#Creates the table with monsters
 DB.create_table? :monsters do
   String :name, primary_key: true
   Integer :ferocity

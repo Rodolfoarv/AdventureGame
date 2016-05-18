@@ -9,7 +9,10 @@ enable :sessions
 set :bind, '0.0.0.0'
 set :session_secret, 'SecretString#!$%'
 
-DB ||= Sequel.connect("sqlite://game.db") # in memory
+
+
+# Used within the game, will have the Database in memory
+DB ||= Sequel.connect("sqlite://game.db")
 
 require_relative 'models/game'
 require_relative 'models/player'
@@ -20,6 +23,7 @@ require_relative 'models/states/fighting_state'
 require_relative 'models/states/exploring_state'
 
 
+# Main root to the game
 get '/' do
   # if session[:game] == 'started'
   #   redirect '/game'
@@ -29,11 +33,13 @@ get '/' do
   erb:index
 end
 
+# Post of the user's infomration
 post '/' do
   session[:game] = Game.new Player.new params[:name]
   redirect '/game'
 end
 
+# Begin the game
 get '/game' do
   # if session[:game] != 'started'
   #   redirect '/'
@@ -46,6 +52,7 @@ get '/status' do
   get_status.to_json
 end
 
+#Method that will display the current status of the game
 def get_status
   game = session[:game]
   status = Hash.new
@@ -85,10 +92,9 @@ post '/fight_monster' do
   game = session[:game]
   weapon = params[:weapon].to_sym
   output = game.state.handle weapon
-  
+
   status = get_status
   status[:output] = output
   status.to_json
-
 
 end

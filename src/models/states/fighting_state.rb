@@ -3,14 +3,16 @@
 # Authors: A01169701 Rodolfo Andrés Ramírez Valenzuela
 
 #FightingState class, provides all the logic for handling a battle
-
 class FightingState
+
+  #Method that initializes the state with the current game
   def initialize(game)
     @game = game
   end
 
-  # Returns the current status of the state, i.e. if the game is
-  # waiting fo the player to chose a weapon to fight with.
+  # Returns the current status of the fight, it will display the ferocity
+  # and the player's information to start the fight. This method awaits the response
+  # of the user to begin the fight either with a weapon or with bare hands.
   def status
 
     monster = @game.current_room_model.monster
@@ -29,7 +31,9 @@ class FightingState
     output
   end
 
-  # Provides all the logic for fighting
+  # Provides the logic for fighting, it recieves a weapon, which will be prompted
+  # and validated in order to reduce the ferocity factor and acquire a succesful chance
+  # again the monster.
   def handle(weapon)
     weapon = weapon.to_sym if weapon
     output = ""
@@ -142,9 +146,6 @@ class FightingState
         player.strength -= 5
       end
 
-      # TODO implement the to_s from monster
-
-      #if the condition of the loop do is false
       if rand() * 16 > new_ferocity
         output << "You managed to kill  #{@game.current_room_model.monster.name}\n"
         player.monsters_killed += 1

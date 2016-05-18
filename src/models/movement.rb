@@ -1,3 +1,5 @@
+
+#Creats the table with movements
 DB.create_table? :movements do
   primary_key :id
 
@@ -11,8 +13,10 @@ DB.create_table? :movements do
 end
 
 #The Movement Class specifies the valid movements the user will be able to take
-# in a certain room e.g North, West, East, Up, Down, South.
+#in a certain room e.g North, West, East, Up, Down, South.
 class Movement < Sequel::Model
+
+  # Retuns the room's name
   def room
     Room[self.room_name]
   end

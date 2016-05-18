@@ -4,17 +4,25 @@
 
 require_relative 'exploring_state'
 
+# This state represents when the user is inside the inventory, this way the user
+# will be able to purchase items and use them in the adventure ahead.
+#The following items that may be purchased are:
+# - Flaming Torch
+# - Axe
+# - Sword
+# - Food
+# - Magic Amulet
+# - Suit of Armor
+class ShoppingState
 
-## +BuyingState+ class.
-# This state represents the context where the player is trying to buy
-# something to add an item to the inventory.
-class BuyingState
+  #Method that initializes the State, contains the game the user is currently in
+  #and an attribute isBuyingFood in order to display another menu to purchase food quantity.
   def initialize(game)
-    @game = game
-    @isBuyingFood = false
+    @game = game #Current game
+    @isBuyingFood = false #If it should display the optional menu
   end
 
-  # Returns the current status for the state, i.e. request the player to buy something
+  #Method that returns the current status, this will display the menu
   def status
     output = ""
     output = "\nYour current wealth is: #{@game.player.wealth}\n"
@@ -30,6 +38,7 @@ class BuyingState
     output
   end
 
+  #Method that displays the optional menu for buying food
   def food_status
     output = "\nYour current wealth is: #{@game.player.wealth}\n"
     output << "\n******* Provisions & Inventory********* \n"
@@ -37,11 +46,13 @@ class BuyingState
     output
   end
 
-
+  #Method that displays the current status
   def start
-
+    self.status
   end
 
+  #Method that handles the cheating if the user tries to purchase something
+  #and has no money
   def handleCheating(wealth, price, output)
     player = @game.player
     if wealth < price
@@ -52,6 +63,7 @@ class BuyingState
     player.wealth -= price
   end
 
+  #Method that handles the food shopping, i.e the quantity of food the user wants to buy
   def handleShoppingFood(command)
     player = @game.player
     option = command.to_i
@@ -71,7 +83,7 @@ class BuyingState
     output
   end
 
-  # Displays the cost of the items and what items you already have
+  # Method that will be used to verify the commands in the input line
   def handle(command)
     if @isBuyingFood
       handleShoppingFood(command)
