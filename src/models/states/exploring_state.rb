@@ -20,6 +20,8 @@ class ExploringState
     @game = game
     # verifies if the user is buying food
     @eating_food = false
+    # handle the running, in this state no other action is permitted beside moving
+    @is_moving = false
   end
 
 
@@ -72,7 +74,7 @@ class ExploringState
   # - :consume : Eats food to gain strength
   # - :inventory : Will move to the ShoppingState and display the inventory information
   def handle(command)
-    puts "Doing #{command}..."
+
     output = ""
     if @eating_food
       food_quantities = {:zero => 0, :one => 1, :two => 2, :three => 3, :four => 4, :five => 5, :six => 6,
@@ -103,8 +105,15 @@ class ExploringState
       if method == :move
         output << self.send(method, command)
         output << self.status
+        @is_moving = false
       else
-        output << self.send(method)
+        if @is_moving
+          output << "Don't waste time on that! You must run!!! \n"
+          output << @game.current_room_model.description
+        else
+          output << self.send(method)
+        end
+
       end
 
     end
@@ -123,20 +132,6 @@ class ExploringState
     output
   end
 
-  #Method that allows the user to fight
-  def fight
-    monster = @game.current_room_model.monster
-    player = @game.player
-    return unless monster
-
-    @game.state = FightingState.new @game
-
-    if not player.weapons.empty?
-      @game.state.status # Ask for weapon
-    else
-      @game.state.handle( nil ) # Start the fight directly
-    end
-  end
 
   # Method that will move the user to another random room
   def magic
@@ -204,16 +199,28 @@ class ExploringState
   end
 
   #Method that allows the user to run from the fight
-  def run(direction)
+  def run
+    return "You can't run, there is no monster here #{self.status}" unless @game.current_room_model.monster
+    has_torch = @game.player.has_torch?
+    return "You can't see anything, you must purchase a torch\n" unless has_torch
+    player = @game.player
     output = ""
     if rand > 0.7
       output << "No, you must stand and fight"
-      game.state = FightingState.new game
-      output << game.state.handle
-      return output
+      @game.state = FightingState.new @game
+      if not player.weapons.empty?
+        output << @game.state.status # Ask for weapon
+      else
+        output << @game.state.handle( nil ) # Start the fight without any weapon
+      end
     else
-      move direction
+      output << "This is your opportunity!!! You have the chance to run \n"
+      output << "Where shall you run?\n"
+      output << "#{@game.current_room_model.description}"
+      @is_moving = true
+      output
     end
+
   end
 
   # Method that allows the player to eat food
@@ -239,10 +246,11 @@ class ExploringState
 
   #Method used to handle the fight between a monster and the user.
   def fight
-    puts "got here"
+    has_torch = @game.player.has_torch?
+    return "You can't see anything, you must purchase a torch\n" unless has_torch
     monster = @game.current_room_model.monster
     player = @game.player
-    return unless monster
+    return "There is no monster in this room \n #{self.status}" unless monster
     @game.state = FightingState.new @game
     if not player.weapons.empty?
       @game.state.status # Ask for weapon
