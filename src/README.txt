@@ -68,22 +68,19 @@ link:/images/package_diagram.png
 
 === Physical View
 
-The physical view describes the physical deployment of the system, revealing which pieces of software run on what pieces of hardware. In UML, <em>deployment diagrams</em> are used to model the physical view.
-
-For example, this is the deployment diagram for our application:
-
-link:../images/deployment_diagram.png
+link:/images/Deployment_diagram.png
 
 === Scenarios
-This view describes the functionality of the system from the perspective from outside world. It contains diagrams describing what the system is supposed to do from a black box perspective. UML <em>use case diagrams</em> are used for this view.
+link:/images/use_case.png
 
 == Patterns Used
 
 Briefly mention all the patterns that your application uses and identify where exactly. In our example, the following pattern are clearly used:
 
-- <b>Domain-Specific Language</b>: The +server.rb+ file consists of a series of Sinatra _routes_. Sinatra is a DSL for creating web applications in Ruby.
+- <b>Domain-Specific Language</b>: The +app.rb+ file consists of a series of Sinatra _routes_. Sinatra is a DSL for creating web applications in Ruby.
 - <b>Model-View-Controller</b>: The application follows the classical web implementation of the MVC architectural pattern. The models (+.rb+ files) and views (+.erb+ files) are stored in the corresponding +models+ and +views+ directory. The controller is contained in +server.rb+ file.
-- <b>Simple Factory</b>: The +GreeterFactory+ is used to create +Greeter+ instances by specifying the desired language during its creation.
+- <b>State Pattern</b>: All the +States.rb+ files implement this pattern, each state knows the current action of the player on the game, each state identifies each of the possible actions the player may do during the game.
+- <b>Composite Pattern</b>:
 
 == Acknowledgments
 
@@ -93,9 +90,6 @@ This section is optional. If somebody helped you with your project make sure to 
 
 Mention here any consulted books or web resources. Examples:
 
-- \M. Fowler. <em>UML Distilled: A Brief Guide to the Standard Object Modeling Language, 3rd Edition.</em>  Addison-Wesley, 2003. Available through {Safari Books Online}[http://proquestcombo.safaribooksonline.com/book/software-engineering-and-development/uml/0321193687].
-
-- \E. Gamma, R. Helm, R. Johnson, J. M. Vlissides. <em>Design Patterns: Elements of Reusable Object-Oriented Software.</em> Addison-Wesley, 1994. Available through {Safari Books Online}[http://proquestcombo.safaribooksonline.com/book/software-engineering-and-development/patterns/0201633612].
 
 - \A. Harris, K. Haase. <em>Sinatra: Up and Running.</em> O'Reilly, 2011. {Safari Books Online}[http://proquestcombo.safaribooksonline.com/book/web-development/ruby/9781449306847].
 
@@ -103,4 +97,4 @@ Mention here any consulted books or web resources. Examples:
 
 - \R. Olsen. <em>Design Patterns in Ruby.</em> Addison-Wesley, 2007. Available through {Safari Books Online}[http://proquestcombo.safaribooksonline.com/book/web-development/ruby/9780321490452].
 
-- Ruby-Doc.org. <em>RDoc Markup Reference.</em> {\http://ruby-doc.org/stdlib-2.2.3/libdoc/rdoc/rdoc/RDoc/Markup.html}[http://ruby-doc.org/stdlib-2.2.3/libdoc/rdoc/rdoc/RDoc/Markup.html#class-RDoc::Markup-label-Block+Markup] Accessed April 14, 2016.
+- Ruby-Doc.org. <em>RDoc Markup Reference.</em> {\http://ruby-doc.org/stdlib-2.2.3/libdoc/rdoc/rdoc/RDoc/Markup.html}[http://ruby-doc.org/stdlib-2.2.3/libdoc/rdoc/rdoc/RDoc/Markup.html#class-RDoc::Markup-label-Block+Markup] Accessed May 06, 2016.
