@@ -206,7 +206,7 @@ class ExploringState
     player = @game.player
     output = ""
     if rand > 0.7
-      output << "No, you must stand and fight"
+      output << "No, you must stand and fight\n Watch out Hero!! The monster is coming to you! \n"
       @game.state = FightingState.new @game
       if not player.weapons.empty?
         output << @game.state.status # Ask for weapon
