@@ -14,16 +14,14 @@ class FightingState
   # and the player's information to start the fight. This method awaits the response
   # of the user to begin the fight either with a weapon or with bare hands.
   def status
+    puts @game.player.items
 
     monster = @game.current_room_model.monster
     return unless monster
 
     weapons = @game.player.weapons
-
     output = "With a ferocious sight the Wild #{monster.name} wants to fight! \n"
     output << "Be careful it's ferocity level is #{monster.ferocity}\n"
-
-
     weapons.each_with_index do |weapon, i|
       output << "#{i + 1} - #{weapon}\n"
     end
@@ -96,10 +94,7 @@ class FightingState
       # end
       #
 
-      #change to face 3 THE BATTLE
-      # TODO loop do line 940
-
-      if rand() > 0.5 && player.has_torch?
+      if rand() > 0.8 && player.has_torch?
         output << "Your Torch was knocked from your hand.\n"
         items.delete :torch
       end
@@ -153,6 +148,11 @@ class FightingState
       else
         output << "The #{@game.current_room_model.monster.name} defeated you\n"
         player.strength /= 2
+      end
+
+      if (player.strength < 1)
+        @game.state = DeadState.new @game
+        return @game.state.status
       end
 
       @game.state = ExploringState.new @game
