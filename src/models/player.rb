@@ -34,10 +34,10 @@ class Player
     @tally = 0
     @monsters_killed = 0
     @items           = Hash.new
-    @items[:torch]   = false
-    @items[:amulet]  = false
+    @items[:torch]   = true
+    @items[:amulet]  = true
     @items[:suit]    = true
-    @items[:weapons] = Set.new [:axe, :sword]
+    @items[:weapons] = Set.new []
     @strength = 60 + rand(1..100)
     @wealth = 30 + rand(1..100)
 
@@ -55,7 +55,7 @@ class Player
 
   #Fundamental method, returns true if the user has a torch in order to advance
   def has_torch?
-    self.items.has_key? :torch
+    return self.items[:torch]
   end
 
   #Returns the weapons that the player is carrying as a set of symbols

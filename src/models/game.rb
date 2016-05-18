@@ -13,6 +13,7 @@ class Game
   attr_accessor :current_room
   # Information about the state e.g (Explore)
   attr_accessor :state
+  # Information that displays if it has a treasure and a monster
 
   # Initialize the game with the player's name, the current_room as the entrance
   # and set the intiial status to ExploringState which will let the user to explore
