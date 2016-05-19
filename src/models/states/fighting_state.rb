@@ -14,8 +14,6 @@ class FightingState
   # and the player's information to start the fight. This method awaits the response
   # of the user to begin the fight either with a weapon or with bare hands.
   def status
-    puts @game.player.items
-
     monster = @game.current_room_model.monster
     return unless monster
 
@@ -56,7 +54,7 @@ class FightingState
 
       end
     else
-      output << "\nYou do not have that weapon\n"
+      output << "\nYou do not have any weapon\n"
       output << "You must fight with bare hands.\n"
       new_ferocity = (new_ferocity + new_ferocity / 5).to_i
     end
@@ -66,33 +64,6 @@ class FightingState
       new_ferocity = 3 * (@game.current_room_model.monster.ferocity / 4).to_i
       output << "\nThe ferocity of the monster is now: #{new_ferocity}\n"
     end
-
-
-    # has_sword = weapons.include? :sword
-    # has_axe = weapons.include? :axe
-    # has_both = has_axe || has_sword
-    #
-    # if not has_both
-    #   output << "You must fight with bare hands.\n"
-    #   new_ferocity = (new_ferocity + new_ferocity / 5).to_i
-    #   output << "\nThe ferocity of the monster is now: #{new_ferocity}"
-    # end
-
-
-      # has_just_sword = has_sword && !has_axe
-      #
-      # if has_just_sword
-      #   output << "You must fight with your sword.\n"
-      #   new_ferocity = 3 * (new_ferocity / 4).to_i
-      # end
-      #
-      # #change to face 2
-      # #store first axe before sword
-      # unless weapons.empty?
-      #   new_ferocity =  4 * (new_ferocity / 5).to_i if weapon == :axe
-      #   new_ferocity =  3 * (new_ferocity / 4).to_i if weapon == :sword
-      # end
-      #
 
       if rand() > 0.8 && player.has_torch?
         output << "Your Torch was knocked from your hand.\n"
@@ -161,5 +132,3 @@ class FightingState
       output
   end
 end
-
-#game.current_room = room.name

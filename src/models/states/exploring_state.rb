@@ -139,6 +139,7 @@ class ExploringState
     room = Room.random
     return self.magic if room.name == "Entrance" || room.name == "Exit"
     @game.current_room = room.name
+    @game.player.items[:amulet] = false
     output << "You moved to another room...\n"
     output << self.status
   end
@@ -241,7 +242,7 @@ class ExploringState
 
   # Method used to display the current status of the game when the user enters the terminal
   def start
-    status
+    self.status
   end
 
   #Method used to handle the fight between a monster and the user.

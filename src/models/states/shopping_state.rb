@@ -65,6 +65,7 @@ class ShoppingState
 
   #Method that handles the food shopping, i.e the quantity of food the user wants to buy
   def handleShoppingFood(command)
+
     player = @game.player
     option = command.to_i
     current_item_price = 0
@@ -85,6 +86,12 @@ class ShoppingState
 
   # Method that will be used to verify the commands in the input line
   def handle(command)
+    puts "got here"
+    puts command
+    if command == :start
+      return self.status
+    end
+
     if @isBuyingFood
       handleShoppingFood(command)
     else
@@ -109,7 +116,7 @@ class ShoppingState
 
       elsif option == 5
         current_item_price = 30
-        items[:amulet] = 1
+        items[:amulet] = true
       elsif option == 6
         current_item_price = 60
         items[:suit] = 1

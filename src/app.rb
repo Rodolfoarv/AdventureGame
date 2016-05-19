@@ -36,6 +36,7 @@ end
 # Post of the user's infomration
 post '/' do
   session[:game] = Game.new Player.new params[:name]
+  session[:room_status] = {}
   redirect '/game'
 end
 
@@ -44,7 +45,6 @@ get '/game' do
   # if session[:game] != 'started'
   #   redirect '/'
   # end
-  p session[:game]
   erb :game
 end
 

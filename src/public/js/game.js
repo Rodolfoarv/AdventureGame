@@ -48,9 +48,7 @@ function hasMonster(){
 
 werewolf.terminal = {
 	main: function(input, terminal) {
-		getStatus(function (status){
-			terminal.echo(status.output);
-		});
+
 
 		var command = $.trim(input);
 		if (command !== '') {
@@ -62,7 +60,6 @@ werewolf.terminal = {
 				terminal.error("Invalid command type <help> if you need to remember available commands")
 				return;
 			}
-      console.log(CURRENT_STATE)
 
       if (CURRENT_STATE === "ShoppingState") return handleShopping(command, terminal);
       else if (CURRENT_STATE === "FightingState") return handleFighting(command,terminal);
@@ -145,8 +142,10 @@ werewolf.terminal = {
 };
 
 function handleShopping(command, terminal){
-  var output = "";
-  command = Number(command);
+  if (command !== "start"){
+    var output = "";
+    command = Number(command);
+  }
 
   $.ajax({
   type: 'POST',
